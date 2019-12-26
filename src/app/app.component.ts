@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import {Observable,of, from } from 'rxjs';
+import {Observable , forkJoin} from 'rxjs';
 
+import { mergeMap } from 'rxjs/operators';
 
 
 @Component({
@@ -10,10 +11,74 @@ import {Observable,of, from } from 'rxjs';
 })
 export class AppComponent  {
   name = 'Angular';
+obsNom : Observable<any>;
+obsAge: Observable<any>;
 
 ngOnInit(){
 
+//this.test01();
+this.test02();
 
+
+}
+test02(){
+  console.log('Debut test02 ........');
+
+this.obsNom = new Observable((observer) => {
+    let listOfFriends = ["Damien", "Thomas", "Laurent", "Jean"];
+    listOfFriends.forEach((friend: string) => {
+        observer.next(friend);
+    });
+    observer.complete();
+});
+this.obsAge = new Observable((observer) => {
+    let listOfAges = ["20", "18", "36", "42"];
+    listOfAges.forEach((age: string) => {
+        observer.next(age);
+    });
+    observer.complete();
+});
+
+this.obsNom.subscribe({
+    next(value) { console.log('Nom  ', value); },
+    complete() { console.log("Nom fini!"); }
+});
+
+this.obsAge.subscribe({
+    next(value) { console.log('Age  ', value); },
+    complete() { console.log("Age fini!"); }
+});
+
+
+const obsForkJoinDico = forkJoin({
+  obsNom: this.obsNom,
+  obsAge: this.obsAge
+});
+
+const obsForkJoinTab = forkJoin([
+  this.obsNom,
+  this.obsAge
+]);
+
+obsForkJoinDico.subscribe({
+ next: value => console.log('obsForkJoinDico'),
+ complete: () => console.log('This is how it ends!'),
+});
+
+obsForkJoinTab.subscribe({
+ next: value => console.log('obsForkJoinTab - ', value),
+ complete: () => console.log('This is how it ends!'),
+});
+
+
+
+
+}
+
+
+
+test01(){
+  console.log('Debut test01');
 let monObservable = new Observable((observer) => {
     let listOfFriends = ["Damien", "Thomas", "Laurent", "Jean"];
     listOfFriends.forEach((friend: string) => {
@@ -56,7 +121,7 @@ monObservable.subscribe({
 
 
 
-
+console.log('Fin test01');
 
 }
 
